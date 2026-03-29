@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A React Native demo app that showcases custom Datadog RUM resource tracking with payload inspection. It fetches data from JSONPlaceholder, validates the response structure, computes metadata, and sends custom attributes to Datadog RUM via manual `DdRum.startResource()`/`stopResource()` instrumentation.
+A quick, vibe-coded React Native example demonstrating how to add URL-specific attribute context into Datadog RUM based on response payload content, URL pathing, and other request metadata. This is not a best-practice reference — it is an example of how payload inspection and custom RUM attributes could work for customer use cases.
+
+The app fetches data from JSONPlaceholder, validates the response structure, computes metadata, and sends custom attributes to Datadog RUM via manual `DdRum.startResource()`/`stopResource()` instrumentation.
 
 ## Commands
 

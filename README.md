@@ -1,97 +1,62 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Datadog RUM React Native — Payload Inspection Example
 
-# Getting Started
+A quick, vibe-coded React Native example demonstrating how to add URL-specific attribute context into Datadog RUM based on response payload content, URL pathing, and other request metadata.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+> **Note:** This is not intended as a best-practice approach. It is purely an example of how payload inspection and custom RUM attributes *could* work for customer use cases.
 
-## Step 1: Start Metro
+## What It Does
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+The app fetches data from the [JSONPlaceholder](https://jsonplaceholder.typicode.com/) API, inspects the response payload, and sends custom attributes to Datadog RUM using manual `DdRum.startResource()`/`stopResource()` instrumentation. This includes:
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **Payload validation** — checks the structure/schema of the response
+- **Computed metadata** — post count, unique users, average title length, structure validity
+- **Custom RUM attributes** — all metadata is attached as custom attributes on the RUM resource event
+- **Error categorisation** — distinguishes network errors from parse/validation errors in RUM
+
+## Screenshots
+
+### RUM Resource Request
+![RUM Resource Request](docs/request.png)
+
+### Custom Metadata Attributes
+![Custom Metadata Attributes](docs/metadata.png)
+
+## Getting Started
+
+> Make sure you have completed the [React Native Environment Setup](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+
+### Prerequisites
+
+- Node >= 22.11.0
+- A `credentials.json` file with your Datadog `clientToken`, `applicationId`, and `environment` (see `credentials.example.json` for the template)
+
+### Running the App
 
 ```sh
-# Using npm
+# Start Metro dev server
 npm start
 
-# OR using Yarn
-yarn start
-```
+# Run on iOS (in a separate terminal)
+npm run ios
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+# Run on Android (in a separate terminal)
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+For iOS, install CocoaPods dependencies first:
 
 ```sh
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
 bundle exec pod install
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Architecture
 
-```sh
-# Using npm
-npm run ios
+- **`App.tsx`** — Root component wrapping the app with `DatadogProvider`
+- **`src/MainScreen.tsx`** — Single-screen UI with a FETCH button that triggers the instrumented API call and displays results
+- **`src/fetchWithRum.ts`** — Core logic: fetch, validate, compute metadata, and report to RUM with custom attributes
 
-# OR using Yarn
-yarn ios
-```
+## Key Design Decisions
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- **Manual RUM instrumentation** — `trackResources` is set intentionally to control exactly what gets reported, rather than relying on auto-tracking
+- **Credentials via JSON file** — `credentials.json` is gitignored; never commit it
